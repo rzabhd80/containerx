@@ -14,6 +14,14 @@ char *reserve_stack_memory()
         return stackPointer + stackSize;
 }
 
+template <typename Function>
+void clone_process(Function &&function, int flags)
+{
+    auto pid = clone(function, stack_memory(), flags, 0);
+
+    wait(nullptr);
+}
+
 int run_process(const char *processName)
 {
     char *const __agrs[] = {(char *)processName, (char *)0};
@@ -38,6 +46,11 @@ int child_process(void *agrs)
     setup_env_vars();
     change_root("./root");
     mount("proc", "/proc", "proc", 0, 0);
+
+    auto bash_Process = [](void *args) -> int
+    { run_process(BASH); };
+
+    clone_process(bash_Process, SIGCHLD);
     run_process(BASH);
     umount("/proc");
     exit(EXIT_SUCCESS);
@@ -46,7 +59,7 @@ int child_process(void *agrs)
 int main(int argc, char **agrv)
 {
     printf("main process\n");
-    int8_t status = clone(child_process, reserve_stack_memory(), CLONE_NEWPID | CLONE_NEWUTS | SIGCHLD, 0);
+    clone_process(child_process, CLONE_NEWPID | CLONE_NEWUTS | SIGCHLD);
     wait(nullptr);
     return EXIT_SUCCESS;
 }
