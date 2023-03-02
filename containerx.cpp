@@ -20,6 +20,13 @@ int run_process(const char *processName)
     return execvp(processName, __agrs);
 }
 
+void setup_env_vars()
+{
+    clearenv();
+    setenv("TERM", "xterm-256color", 0);
+    setenv("PATH", "/bin/:/sbin/:usr/bin:/usr/sbin", 0);
+}
+
 void change_root(const char *fileName)
 {
     chroot(fileName);
@@ -28,7 +35,8 @@ void change_root(const char *fileName)
 
 int child_process(void *agrs)
 {
-    clearenv();
+    setup_env_vars();
+    change_root("./root");
     run_process(BASH);
     exit(EXIT_SUCCESS);
 }
