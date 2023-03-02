@@ -23,7 +23,7 @@ char *reserve_stack_memory()
 template <typename Function>
 void clone_process(Function &&function, int flags)
 {
-    auto pid = clone(function, stack_memory(), flags, 0);
+    auto pid = clone(function, reserve_stack_memory(), flags, 0);
 
     wait(nullptr);
 }
