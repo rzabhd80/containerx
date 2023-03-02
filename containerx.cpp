@@ -14,6 +14,12 @@ char *reserve_stack_memory()
         return stackPointer + stackSize;
 }
 
+/**
+ * function aims for cloning a process
+ * with a size given by reserve_stack_memory function.
+ * wait syscall is used to make the parent process wait for child to be terminated
+ */
+
 template <typename Function>
 void clone_process(Function &&function, int flags)
 {
@@ -47,11 +53,15 @@ int child_process(void *agrs)
     change_root("./root");
     mount("proc", "/proc", "proc", 0, 0);
 
+    /*regardign the fact that should we run bash process on the child
+     *  it will never be able to unmount proc, we use a third cloned process to
+     * run bash and once its been terminated, the second process will unmount the proc
+     */
+
     auto bash_Process = [](void *args) -> int
     { run_process(BASH); };
 
     clone_process(bash_Process, SIGCHLD);
-    run_process(BASH);
     umount("/proc");
     exit(EXIT_SUCCESS);
 }
@@ -60,6 +70,6 @@ int main(int argc, char **agrv)
 {
     printf("main process\n");
     clone_process(child_process, CLONE_NEWPID | CLONE_NEWUTS | SIGCHLD);
-    wait(nullptr);
+
     return EXIT_SUCCESS;
 }
