@@ -59,7 +59,7 @@ int child_process(void *agrs)
      */
 
     auto bash_Process = [](void *args) -> int
-    { run_process(BASH); };
+    { return run_process(BASH); };
 
     clone_process(bash_Process, SIGCHLD);
     umount("/proc");
