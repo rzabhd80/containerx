@@ -17,7 +17,7 @@ char *reserve_stack_memory()
 int run_process(const char *processName)
 {
     char *const __agrs[] = {(char *)processName, (char *)0};
-    execvp(processName, __agrs);
+    return execvp(processName, __agrs);
 }
 
 int child_process(void *agrs)
