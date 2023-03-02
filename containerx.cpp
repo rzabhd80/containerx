@@ -1,5 +1,5 @@
 #include "containerx.h"
-#define BASH "/bin/bash"
+#define BASH "/bin/sh"
 
 char *reserve_stack_memory()
 {
@@ -31,7 +31,8 @@ void clone_process(Function &&function, int flags)
 int run_process(const char *processName)
 {
     char *const __agrs[] = {(char *)processName, (char *)0};
-    return execvp(processName, __agrs);
+    auto result = execvp(processName, __agrs);
+    return result;
 }
 
 void setup_env_vars()
@@ -60,8 +61,8 @@ int child_process(void *agrs)
 
     auto bash_Process = [](void *args) -> int
     { return run_process(BASH); };
-
-    clone_process(bash_Process, SIGCHLD);
+     clone_process(bash_Process, SIGCHLD);
+  //  run_process(BASH);
     umount("/proc");
     exit(EXIT_SUCCESS);
 }
