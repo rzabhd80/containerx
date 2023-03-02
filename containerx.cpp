@@ -37,7 +37,9 @@ int child_process(void *agrs)
 {
     setup_env_vars();
     change_root("./root");
+    mount("proc", "/proc", "proc", 0, 0);
     run_process(BASH);
+    umount("/proc");
     exit(EXIT_SUCCESS);
 }
 
