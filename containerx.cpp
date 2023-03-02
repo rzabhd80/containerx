@@ -20,15 +20,23 @@ int run_process(const char *processName)
     return execvp(processName, __agrs);
 }
 
+void change_root(const char *fileName)
+{
+    chroot(fileName);
+    chdir("/");
+}
+
 int child_process(void *agrs)
 {
+    clearenv();
     run_process(BASH);
     exit(EXIT_SUCCESS);
 }
+
 int main(int argc, char **agrv)
 {
     printf("main process\n");
-    int8_t status = clone(child_process, reserve_stack_memory(), SIGCHLD, 0);
+    int8_t status = clone(child_process, reserve_stack_memory(), CLONE_NEWPID | CLONE_NEWUTS | SIGCHLD, 0);
     wait(nullptr);
     return EXIT_SUCCESS;
 }

@@ -10,4 +10,5 @@
 char *reserve_stack_memory();
 int child_process(void *agrs);
 int run_process(const char *processName);
+void change_root(const char *fileName);
 #endif
